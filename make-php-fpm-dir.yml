@@ -1,0 +1,13 @@
+- hosts: web
+  tasks:
+  - name: ansible create multiple directory
+    file:
+      path: "{{ item }}"
+      state: directory
+      mode:  "{{ mode }}
+      owner: "{{ item.owner }}"
+      group: "{{ item.group }}"   
+    with_items:
+      - { dest: '/tmp/devops_system1', mode: '0777', owner: 'php', group: 'php' }
+      - '/tmp/devops_system2'
+      - '/tmp/devops_system3'

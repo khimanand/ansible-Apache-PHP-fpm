@@ -1,0 +1,68 @@
+---
+# Setup LAMP Stack
+- hosts: web
+  vars:
+    php_ver: 7.1          
+  pre_tasks:
+    - name: "Add repository for PHP 7.1."
+      become: yes
+      apt_repository: 
+        repo="ppa:ondrej/php" 
+        update_cache=yes
+        
+  tasks:
+    - name: install lamp stack
+      become: yes
+      become_user: root
+      apt:
+        pkg:
+          - apache2
+          - mysql-server
+          - php{{ php_ver }}
+          - php{{ php_ver }}-mbstring
+          - php7.1-dom
+          - php7.1-gd
+          - php7.1-zip  
+          - php7.1-mysql
+          - php7.1-fpm		
+        state: present
+        update_cache: yes
+
+    - name: start apache service
+      become: yes
+      become_user: root
+      service:
+        name: apache2
+        state: started
+        enabled: yes
+
+    - name: create target directory
+      file: path=/var/www/html state=directory mode=0755
+
+    - name: deploy index.html
+      become: yes
+      become_user: root
+      copy:
+        src: /tmp/index.html
+        dest: /var/www/html/index.html
+# Setup php-fpm
+    - name: add user php
+      become: yes
+      user: 
+        name: php
+        shell: /usr/sbin/nologin
+        system: yes
+    - name: copy configuration file
+      become: yes
+      copy:
+          src: "{{ item.src }}"
+          dest: "{{ item.dest }}"
+          owner: root
+          group: adm
+          mode: 0770
+      with_items:
+              - { src: './php-conf/php.ini',dest: '/etc/php/7.1/fpm/' }
+              - { src: './php-conf/php-fpm.conf',dest: '/etc/php/7.1/fpm/' } 
+              - { src: './php-conf/www.conf',dest: '/etc/php/7.1/fpm/pool.d/' }  
+                 
+         
