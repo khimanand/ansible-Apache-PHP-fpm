@@ -2,7 +2,7 @@
 # Setup LAMP Stack
 - hosts: web
   vars:
-    php_ver: 7.1          
+    php_ver: 7.0          
   pre_tasks:
     - name: "Add repository for PHP 7.1."
       become: yes
@@ -17,14 +17,13 @@
       apt:
         pkg:
           - apache2
-          - mysql-server
           - php{{ php_ver }}
           - php{{ php_ver }}-mbstring
-          - php7.1-dom
-          - php7.1-gd
-          - php7.1-zip  
-          - php7.1-mysql
-          - php7.1-fpm		
+          - php{{ php_ver }}-dom
+          - php{{php_ver}}-gd
+          - php{{ php_ver }}-zip  
+          - php{{php_ver}}-mysql
+          - php{{ php_ver }}-fpm		
         state: present
         update_cache: yes
 
@@ -61,8 +60,8 @@
           group: adm
           mode: 0770
       with_items:
-              - { src: './php-conf/php.ini',dest: '/etc/php/7.1/fpm/' }
-              - { src: './php-conf/php-fpm.conf',dest: '/etc/php/7.1/fpm/' } 
-              - { src: './php-conf/www.conf',dest: '/etc/php/7.1/fpm/pool.d/' }  
+              - { src: './php-conf/php.ini',dest: '/etc/php/{{ php_ver }}/fpm/' }
+              - { src: './php-conf/php-fpm.conf',dest: '/etc/php/{{ php_ver }}/fpm/' } 
+              - { src: './php-conf/www.conf',dest: '/etc/php/{{ php_ver }}/fpm/pool.d/' }  
                  
          
